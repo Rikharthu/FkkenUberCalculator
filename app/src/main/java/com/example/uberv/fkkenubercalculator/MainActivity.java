@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
             R.id.op_button_add, R.id.op_button_sub,
             R.id.op_button_div})
     void OnDigitInput(Button button) {
+        // TODO disable first operation character if it is not -
         char newChar = button.getText().toString().charAt(0);
         // if last char was operation, and new char is operation, then replace last operation
         if (isOperation(lastChar) && isOperation(newChar)) {
