@@ -1,10 +1,13 @@
 package com.example.uberv.fkkenubercalculator;
 
+import android.icu.math.BigDecimal;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -20,20 +23,24 @@ import net.sourceforge.jeval.Evaluator;
 // TODO custom animation
 
 public class MainActivity extends AppCompatActivity {
+    // CONSTANTS
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
-
     public static final char NULL_CHAR = '\u0000';
 
+    // VIEWS
     @BindView(R.id.input_tv)
     TextView mInputTv;
     @BindView(R.id.output_tv)
     TextView mOutputTv;
     @BindView(R.id.op_button_del)
     Button mDeleteBtn;
+    @BindView(R.id.input_scrollview)
+    HorizontalScrollView mInputHorizontalSv;
+    // MEMBERS VARIABLES
     private StringBuilder mEquationBuilder = new StringBuilder();
-
     private Evaluator mEvaluator;
     private char lastChar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mEvaluator = new Evaluator();
+        // butterknife does not support long clicks
         mDeleteBtn.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -69,6 +77,29 @@ public class MainActivity extends AppCompatActivity {
         lastChar = newChar;
         mInputTv.setText(mEquationBuilder.toString());
         calculate();
+        scrollToRight();
+    }
+
+    private void scrollToRight() {
+        // fix a bug where HorizontalScrollView is not scroll fully to the right
+        ViewTreeObserver vto = mInputHorizontalSv.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // remove this listener
+                mInputHorizontalSv.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                mInputHorizontalSv.scrollTo(mInputTv.getWidth(), 0);
+            }
+        });
+        // TODO do the same for output scroll view
+    }
+
+    /**
+     * check if last input number doesn't have a dot (.), so we can place one
+     */
+    private boolean canPlaceDot() {
+
+        return false;
     }
 
     private void calculate() {
@@ -87,10 +118,11 @@ public class MainActivity extends AppCompatActivity {
 //            e.printStackTrace();
             }
             if (!isEmptyOrNull(output)) {
+                // no exception occurred => calculated successfully
                 mOutputTv.setText(output);
             }
-        }else{
-            // nothing to calculate (reset text incase of backspace function)
+        } else {
+            // nothing to calculate (reset text in case of backspace function)
             mOutputTv.setText("");
         }
     }
