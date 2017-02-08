@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.uberv.fkkenubercalculator.MainActivity">
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,6 +17,15 @@
         android:background="@color/white"
         android:elevation="10dp"
         android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:minHeight="?attr/actionBarSize"
+            app:titleTextColor="#EEEEEE">
+        </android.support.v7.widget.Toolbar>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -31,28 +42,31 @@
                 android:scrollbars="none">
 
                 <TextView
+
                     android:id="@+id/input_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentTop="true"
+                    android:textColor="@color/black"
+                    android:fontFamily="monospace"
                     android:gravity="center"
                     android:paddingLeft="10dp"
                     android:textAlignment="center"
                     android:textSize="48sp"
                     tools:background="#ffaaaa"
-                    tools:text="Hello World!"/>
+                    tools:text="Hello World!"
+                    android:textStyle="normal|bold"/>
             </HorizontalScrollView>
 
-
         </RelativeLayout>
-
 
         <TextView
             android:id="@+id/output_tv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="40"
+            android:fontFamily="monospace"
             android:textAlignment="textEnd"
             android:textSize="24sp"
             tools:background="#ffaaaa"
@@ -88,7 +102,7 @@
                     android:background="@color/gray"
                     android:text="7"
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
                 <Button
                     android:id="@+id/digit_btn_8"
@@ -98,7 +112,7 @@
                     android:background="@color/gray"
                     android:text="8"
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
                 <Button
                     android:id="@+id/digit_btn_9"
@@ -108,7 +122,7 @@
                     android:background="@color/gray"
                     android:text="9"
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
             </LinearLayout>
 
@@ -127,7 +141,7 @@
                     android:background="@color/gray"
                     android:text="4"
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
                 <Button
                     android:id="@+id/digit_btn_5"
@@ -137,7 +151,7 @@
                     android:background="@color/gray"
                     android:text="5"
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
                 <Button
                     android:id="@+id/digit_btn_6"
@@ -147,7 +161,7 @@
                     android:background="@color/gray"
                     android:text="6"
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
             </LinearLayout>
 
@@ -166,7 +180,7 @@
                     android:background="@color/gray"
                     android:text="1"
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
                 <Button
                     android:id="@+id/digit_btn_2"
@@ -176,7 +190,7 @@
                     android:background="@color/gray"
                     android:text="2"
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
                 <Button
                     android:id="@+id/digit_btn_3"
@@ -186,7 +200,7 @@
                     android:background="@color/gray"
                     android:text="3"
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
             </LinearLayout>
 
@@ -205,7 +219,7 @@
                     android:background="@color/gray"
                     android:text="."
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
                 <Button
                     android:id="@+id/digit_btn_0"
@@ -215,7 +229,7 @@
                     android:background="@color/gray"
                     android:text="0"
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
                 <Button
                     android:id="@+id/op_button_equals"
@@ -225,7 +239,7 @@
                     android:background="@color/gray"
                     android:text="="
                     android:textColor="@color/white"
-                    android:textSize="24sp"/>
+                    android:textSize="48sp"/>
 
             </LinearLayout>
 
@@ -248,7 +262,7 @@
                 android:tag="DEL"
                 android:text="DEL"
                 android:textColor="@color/white"
-                android:textSize="24sp"/>
+                android:textSize="48sp"/>
 
             <Button
                 android:id="@+id/op_button_div"
@@ -259,7 +273,7 @@
                 android:tag="/"
                 android:text="÷"
                 android:textColor="@color/white"
-                android:textSize="24sp"/>
+                android:textSize="48sp"/>
 
             <Button
                 android:id="@+id/op_button_mult"
@@ -270,7 +284,7 @@
                 android:tag="*"
                 android:text="×"
                 android:textColor="@color/white"
-                android:textSize="24sp"/>
+                android:textSize="48sp"/>
 
             <Button
                 android:id="@+id/op_button_sub"
@@ -281,7 +295,7 @@
                 android:tag="-"
                 android:text="-"
                 android:textColor="@color/white"
-                android:textSize="24sp"/>
+                android:textSize="48sp"/>
 
             <Button
                 android:id="@+id/op_button_add"
@@ -292,7 +306,7 @@
                 android:tag="+"
                 android:text="+"
                 android:textColor="@color/white"
-                android:textSize="24sp"/>
+                android:textSize="48sp"/>
         </LinearLayout>
 
 
