@@ -1,13 +1,21 @@
 package com.example.uberv.fkkenubercalculator;
 
+import android.graphics.Color;
 import android.icu.math.BigDecimal;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -36,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     Button mDeleteBtn;
     @BindView(R.id.input_scrollview)
     HorizontalScrollView mInputHorizontalSv;
+    @BindView(R.id.root_layout)
+    LinearLayout rootLayout;
     // MEMBERS VARIABLES
     private StringBuilder mEquationBuilder = new StringBuilder();
     private Evaluator mEvaluator;
@@ -64,8 +74,11 @@ public class MainActivity extends AppCompatActivity {
             R.id.digit_btn_6, R.id.digit_btn_7, R.id.digit_btn_8,
             R.id.digit_btn_9, R.id.digit_btn_point,
             R.id.op_button_add, R.id.op_button_sub,
-            R.id.op_button_div})
+            R.id.op_button_div, R.id.op_button_mult})
     void OnDigitInput(Button button) {
+        if (mDeleteBtn.getText().equals("CLR")) {
+            mDeleteBtn.setText("DEL");
+        }
         // TODO disable first operation character if it is not -
         char newChar = button.getText().toString().charAt(0);
         // if last char was operation, and new char is operation, then replace last operation
@@ -76,7 +89,10 @@ public class MainActivity extends AppCompatActivity {
         }
         lastChar = newChar;
         mInputTv.setText(mEquationBuilder.toString());
-        calculate();
+        String answer = calculate();
+        if (answer != null) {
+            mOutputTv.setText(answer);
+        }
         scrollToRight();
     }
 
@@ -98,18 +114,30 @@ public class MainActivity extends AppCompatActivity {
      * check if last input number doesn't have a dot (.), so we can place one
      */
     private boolean canPlaceDot() {
+        String tmpEquation = mEquationBuilder.toString();
 
         return false;
     }
 
-    private void calculate() {
+    /**
+     * convert user-friendly equation to JEval format (replace ÷ with / and etc)
+     *
+     * @return
+     */
+    private String toJEvalEquation(String equation) {
+        return equation.replace('÷', '/').replace('×', '*');
+    }
+
+    private String calculate() {
         // operate on mEquation
-        String output = new String();
+        String output = null;
         if (mEquationBuilder.length() > 0) {
-            String tmpEquation = isOperation(mEquationBuilder.charAt(mEquationBuilder.length() - 1)) ?
-                    mEquationBuilder.toString().substring(0, mEquationBuilder.length() - 1) :
-                    mEquationBuilder.toString();
-            tmpEquation = tmpEquation.replace('÷', '/');
+            // remove last operation symbol if there are no digits after it
+            String tmpEquation = isOperation(mEquationBuilder.charAt(mEquationBuilder.length() - 1)) ? // is last char an operation?
+                    mEquationBuilder.toString().substring(0, mEquationBuilder.length() - 1) :   // yes - remove it
+                    mEquationBuilder.toString();                                                // no - okay
+            // make equation JEval-friendly
+            tmpEquation = toJEvalEquation(tmpEquation);
             try {
                 output = mEvaluator.evaluate(tmpEquation);
                 Log.d(LOG_TAG, "calculating: " + tmpEquation + " = " + output);
@@ -117,14 +145,11 @@ public class MainActivity extends AppCompatActivity {
                 Log.w(LOG_TAG, "failed to calculate " + tmpEquation);
 //            e.printStackTrace();
             }
-            if (!isEmptyOrNull(output)) {
-                // no exception occurred => calculated successfully
-                mOutputTv.setText(output);
-            }
-        } else {
-            // nothing to calculate (reset text in case of backspace function)
-            mOutputTv.setText("");
+            // no exception occurred => calculated successfully
+            return output;
         }
+        // nothing to calculate (reset text in case of backspace function)
+        return null;
     }
 
 
@@ -136,6 +161,11 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.op_button_del)
     void backspace() {
+        if (mDeleteBtn.getText().equals("CLR")) {
+            delete();
+            mDeleteBtn.setText("DEL");
+            return;
+        }
         if (mEquationBuilder.length() > 0) {
             // backspace
             mEquationBuilder.deleteCharAt(mEquationBuilder.length() - 1);
@@ -150,12 +180,23 @@ public class MainActivity extends AppCompatActivity {
             // since we delete last character, set lastChar to new last character
             mInputTv.setText(mEquationBuilder.toString());
             // recalculate answer
-            calculate();
+            String answer = calculate();
+            if (answer != null) {
+                mOutputTv.setText(answer);
+            }
         }
     }
 
     @OnClick(R.id.op_button_equals)
     void equals() {
+        String answer = calculate();
+        if (!isEmptyOrNull(answer)) {
+            mInputTv.setText(answer);
+            mEquationBuilder = new StringBuilder(answer);
+            mOutputTv.setText("");
+            mDeleteBtn.setText("CLR");
+        }
+        // else - ignore
 
     }
 
@@ -164,6 +205,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isOperation(char c) {
-        return c == '+' || c == '-' || c == '*' || c == '/' || c == '÷';
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '÷' || c == '×';
     }
 }
