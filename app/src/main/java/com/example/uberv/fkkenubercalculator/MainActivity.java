@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout rootLayout;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+    // TODO initialize from resources
     private float defaultFontSize;
     private float fontSize;
     private float minFontSize;
@@ -94,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-    }
 
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
@@ -283,22 +286,27 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // check if we can enlarge the text size
-            // TODO REFACTOR
-            int outputWidth = mInputTv.getWidth();
-            int maxWidth = rootLayout.getWidth();
-            Resources r = getResources();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, r.getDisplayMetrics());
-            if (fontSize < defaultFontSize && outputWidth+px<maxWidth) {
-                // enlarge font size
-                fontSize = fontSize * ((float) maxWidth / (outputWidth));
-                // ...
-                if (fontSize > defaultFontSize) {
-                    Log.d(LOG_TAG,"font is max size");
-                    fontSize = defaultFontSize;
-                }
-                mInputTv.setTextSize(fontSize);
+            adjustTextSize();
+        }
+    }
+
+    private void adjustTextSize(){
+        int outputWidth = mInputTv.getWidth();
+        // TODO extract
+        int maxWidth = rootLayout.getWidth();
+        Resources r = getResources();
+        // get 10dp in pixels (margin-left)
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, r.getDisplayMetrics());
+        if (fontSize < defaultFontSize && outputWidth+px<maxWidth) {
+            // enlarge font size
+            fontSize = fontSize * ((float) maxWidth / (outputWidth));
+            // ...
+            if (fontSize > defaultFontSize) {
+                Log.d(LOG_TAG,"font is max size");
+                fontSize = defaultFontSize;
             }
         }
+        mInputTv.setTextSize(fontSize);
     }
 
     @OnClick(R.id.op_button_equals)
@@ -309,9 +317,10 @@ public class MainActivity extends AppCompatActivity {
             mEquationBuilder = new StringBuilder(answer);
             mOutputTv.setText("");
             mDeleteBtn.setText("CLR");
+            // FIXME wont work, since views do not update immediately
+            adjustTextSize();
         }
         // else - ignore
-
     }
 
     private boolean isEmptyOrNull(String string) {
