@@ -188,20 +188,6 @@ public class MainActivity extends AppCompatActivity {
         scrollToRight();
     }
 
-    private void scrollToRight() {
-        // fix a bug where HorizontalScrollView is not scroll fully to the right
-        ViewTreeObserver vto = mInputHorizontalSv.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                // remove this listener
-                mInputHorizontalSv.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                mInputHorizontalSv.scrollTo(mInputTv.getWidth(), 0);
-            }
-        });
-        // TODO do the same for output scroll view
-    }
-
     /**
      * check if last input number doesn't have a dot (.), so we can place one
      */
@@ -290,23 +276,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void adjustTextSize(){
-        int outputWidth = mInputTv.getWidth();
-        // TODO extract
-        int maxWidth = rootLayout.getWidth();
-        Resources r = getResources();
-        // get 10dp in pixels (margin-left)
-        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, r.getDisplayMetrics());
-        if (fontSize < defaultFontSize && outputWidth+px<maxWidth) {
-            // enlarge font size
-            fontSize = fontSize * ((float) maxWidth / (outputWidth));
-            // ...
-            if (fontSize > defaultFontSize) {
-                Log.d(LOG_TAG,"font is max size");
-                fontSize = defaultFontSize;
+
+
+    private void scrollToRight() {
+        // fix a bug where HorizontalScrollView is not scroll fully to the right
+        ViewTreeObserver vto = mInputHorizontalSv.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // remove this listener
+                mInputHorizontalSv.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                mInputHorizontalSv.scrollTo(mInputTv.getWidth(), 0);
             }
-        }
-        mInputTv.setTextSize(fontSize);
+        });
+    }
+
+    private void adjustTextSize(){
+        ViewTreeObserver vto = mInputTv.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mInputTv.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                int outputWidth = mInputTv.getWidth();
+                // TODO extract
+                int maxWidth = rootLayout.getWidth();
+                Resources r = getResources();
+                // get 10dp in pixels (margin-left)
+                float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, r.getDisplayMetrics());
+                if (fontSize < defaultFontSize && outputWidth+px<maxWidth) {
+                    // enlarge font size
+                    fontSize = fontSize * ((float) maxWidth / (outputWidth));
+                    // ...
+                    if (fontSize > defaultFontSize) {
+                        Log.d(LOG_TAG,"font is max size");
+                        fontSize = defaultFontSize;
+                    }
+                }
+                mInputTv.setTextSize(fontSize);
+            }
+        });
     }
 
     @OnClick(R.id.op_button_equals)
